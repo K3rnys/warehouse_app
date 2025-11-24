@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Список товаров (найдено {{ total }})</h2>
+<form method="get" class="searchform">
+  <input type="text" name="q" placeholder="по названию или артикулу">
+  <input type="text" name="category" placeholder="категория">
+  <select name="supplier">
+    <option value="">Все поставщики</option>
+    {% for s in suppliers %}
+      <option value="{{ s.id }}">{{ s.name }}</option>
+    {% endfor %}
+  </select>
+  <button>Поиск</button>
+</form>
+
+<table class="table">
+  <thead><tr><th>Наименование</th><th>Артикул</th><th>Категория</th><th>Остаток</th><th>Мин. запас</th><th>Поставщик</th></tr></thead>
+  <tbody>
+    {% for p in products %}
+      <tr {% if p.stock_quantity <= p.min_stock and p.min_stock>0 %}class="low"{% endif %}>
+        <td>{{ p.name }}</td>
+        <td>{{ p.sku }}</td>
+        <td>{{ p.category }}</td>
+        <td>{{ p.stock_quantity }} {{ p.unit }}</td>
+        <td>{{ p.min_stock }}</td>
+        <td>{% if p.supplier %}{{ p.supplier.name }}{% endif %}</td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+{% if total > per_page %}
+  <div class="pager">
+    {% if page>1 %}<a href="?page={{ page-1 }}">← Назад</a>{% endif %}
+    <span>Стр. {{ page }}</span>
+    {% if total > page*per_page %}<a href="?page={{ page+1 }}">Вперед →</a>{% endif %}
+  </div>
+{% endif %}
+{% endblock %}

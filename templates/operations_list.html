@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Операции</h2>
+<form method="get" class="searchform">
+  <label>От</label><input type="date" name="from" value="{{ request.args.get('from','') }}">
+  <label>До</label><input type="date" name="to" value="{{ request.args.get('to','') }}">
+  <button>Фильтр</button>
+</form>
+
+<table class="table">
+  <thead><tr><th>Дата</th><th>Товар</th><th>Тип</th><th>Кол-во</th><th>Ответственный</th><th>Примечание</th></tr></thead>
+  <tbody>
+    {% for o in operations %}
+      <tr>
+        <td>{{ o.date.strftime('%Y-%m-%d') if o.date else '' }}</td>
+        <td>{{ o.product.name if o.product }}</td>
+        <td>{{ o.type }}</td>
+        <td>{{ o.quantity }}</td>
+        <td>{{ o.responsible }}</td>
+        <td>{{ o.note }}</td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

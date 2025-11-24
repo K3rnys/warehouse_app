@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Поставки по дате</h2>
+<form method="get" class="searchform">
+  <input type="date" name="date" value="{{ request.args.get('date','') }}">
+  <button>Показать</button>
+</form>
+
+{% if deliveries %}
+  <table class="table">
+    <thead><tr><th>Товар</th><th>Артикул</th><th>Кол-во</th><th>Примечание</th></tr></thead>
+    <tbody>
+      {% for d in deliveries %}
+        <tr><td>{{ d.product.name }}</td><td>{{ d.product.sku }}</td><td>{{ d.op.quantity }}</td><td>{{ d.op.note }}</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% else %}
+  <p>Нет поставок за выбранную дату.</p>
+{% endif %}
+{% endblock %}

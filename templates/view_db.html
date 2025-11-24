@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Отладочный просмотр внутренней БД</h2>
+<h3>Suppliers</h3>
+<pre>{{ db.suppliers | pprint }}</pre>
+<h3>Products</h3>
+<pre>{{ db.products | pprint }}</pre>
+<h3>Stocks</h3>
+<pre>{{ db.stocks | pprint }}</pre>
+<h3>Operations</h3>
+<pre>{{ db.operations | pprint }}</pre>
+{% endblock %}

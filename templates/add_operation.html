@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Добавить операцию</h2>
+<form method="post" class="form">
+  <label>Товар</label>
+  <select name="product_id">
+    {% for val, label in form.product_id.choices %}
+      <option value="{{ val }}">{{ label }}</option>
+    {% endfor %}
+  </select>
+  <label>Тип</label>
+  <select name="op_type">
+    {% for val,label in form.op_type.choices %}
+      <option value="{{ val }}">{{ label }}</option>
+    {% endfor %}
+  </select>
+  <label>Количество</label><input type="number" name="quantity" min="1" value="{{ request.form.quantity or 1 }}">
+  <label>Дата</label><input type="date" name="date" value="{{ request.form.date or '' }}">
+  <label>Откуда (склад)</label><input name="from_warehouse" value="{{ request.form.from_warehouse }}">
+  <label>Куда (склад)</label><input name="to_warehouse" value="{{ request.form.to_warehouse }}">
+  <label>Ответственный</label><input name="responsible" value="{{ request.form.responsible }}">
+  <label>Примечание</label><textarea name="note">{{ request.form.note }}</textarea>
+  <button type="submit">Добавить</button>
+</form>
+{% endblock %}

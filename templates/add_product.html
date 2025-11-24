@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Добавить товар</h2>
+<form method="post" class="form">
+  <label>Наименование</label><input name="name" value="{{ request.form.name }}">
+  <label>Артикул</label><input name="sku" value="{{ request.form.sku }}">
+  <label>Категория</label><input name="category" value="{{ request.form.category }}">
+  <label>Единица измерения</label><input name="unit" value="{{ request.form.unit }}">
+  <label>Поставщик</label>
+  <select name="supplier">
+    {% for val, name in form.supplier.choices %}
+      <option value="{{ val }}">{{ name }}</option>
+    {% endfor %}
+  </select>
+  <label>Характеристики</label><textarea name="description">{{ request.form.description }}</textarea>
+  <button type="submit">Добавить</button>
+</form>
+{% endblock %}

@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Поставщики</h2>
+<a href="{{ url_for('add_supplier_view') }}" class="btn">Добавить поставщика</a>
+<table class="table">
+  <thead><tr><th>Название</th><th>Контакты</th></tr></thead>
+  <tbody>
+    {% for s in suppliers %}
+      <tr><td>{{ s.name }}</td><td>{{ s.contact }}</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}
+

@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Товары с критически низким остатком</h2>
+{% if products %}
+  <table class="table">
+    <thead><tr><th>Товар</th><th>Остаток</th><th>Мин. запас</th><th>Поставщик</th></tr></thead>
+    <tbody>
+      {% for p in products %}
+        <tr><td>{{ p.name }}</td><td>{{ p.stock_quantity }}</td><td>{{ p.min_stock }}</td><td>{% if p.supplier %}{{ p.supplier.name }}{% endif %}</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% else %}
+  <p>Нет товаров, требующих пополнения.</p>
+{% endif %}
+{% endblock %}
