@@ -1,22 +1,22 @@
 {% extends 'base.html' %}
 {% block content %}
 <h2>Товары с низким остатком</h2>
-{% if products %}
-<table>
-<thead><tr><th>id</th><th>Товар</th><th>Остаток</th><th>Мин</th><th>Поставщик</th></tr></thead>
+{% if stocks %}
+<table class="table">
+<thead><tr><th>ID</th><th>Товар</th><th>Остаток</th><th>Минимум</th><th>Поставщик</th></tr></thead>
 <tbody>
-{% for row in products %}
+{% for stock in stocks %}
 <tr>
-    <td>{{ row.product.id }}</td>
-    <td>{{ row.product.name }}</td>
-    <td>{{ row.stock.quantity }}</td>
-    <td>{{ row.stock.min_stock }}</td>
-    <td>{{ row.supplier.name if row.supplier else '' }}</td>
+    <td>{{ stock.product.id }}</td>
+    <td>{{ stock.product.name }}</td>
+    <td>{{ stock.quantity }}</td>
+    <td>{{ stock.min_stock }}</td>
+    <td>{% if stock.product.supplier %}{{ stock.product.supplier.name }}{% else %}-{% endif %}</td>
 </tr>
 {% endfor %}
 </tbody>
 </table>
 {% else %}
-<p>Нет товаров с низким остатком.</p>
+<p>Нет товаров с низким остатком. 😊</p>
 {% endif %}
 {% endblock %}

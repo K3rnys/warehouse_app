@@ -2,22 +2,24 @@
 {% block content %}
 <h2>Добавить товар</h2>
 <form method="post">
-    <label>Наименование</label><br>
-    <input name="name" value="{{ form.name.data or '' }}"><br>
-    <label>Артикул</label><br>
-    <input name="sku" value="{{ form.sku.data or '' }}"><br>
+    <label>Наименование*</label><br>
+    <input name="name" required><br><br>
+    <label>Артикул (SKU)*</label><br>
+    <input name="sku" required><br><br>
     <label>Категория</label><br>
-    <input name="category" value="{{ form.category.data or '' }}"><br>
+    <input name="category"><br><br>
     <label>Ед. измерения</label><br>
-    <input name="unit" value="{{ form.unit.data or '' }}"><br>
+    <input name="unit" placeholder="шт, кг, л"><br><br>
     <label>Поставщик</label><br>
     <select name="supplier">
-      {% for val, label in form.supplier.choices %}
-        <option value="{{ val }}">{{ label }}</option>
+      <option value="">-- Выбрать поставщика --</option>
+      {% for s in suppliers %}
+        <option value="{{ s.id }}">{{ s.name }}</option>
       {% endfor %}
-    </select><br>
-    <label>Характеристики</label><br>
-    <textarea name="description">{{ form.description.data or '' }}</textarea><br>
-    <button type="submit">Добавить</button>
+    </select><br><br>
+    <label>Описание</label><br>
+    <textarea name="description" rows="4"></textarea><br><br>
+    <button type="submit">Добавить товар</button>
+    <a href="{{ url_for('products') }}">Отмена</a>
 </form>
 {% endblock %}

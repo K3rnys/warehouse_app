@@ -2,10 +2,11 @@
 {% block content %}
 <h2>Добавить поставщика</h2>
 <form method="post">
-    <label>Название</label><br>
-    <input name="name" value="{{ form.name.data or '' }}"><br>
+    <label>Название*</label><br>
+    <input name="name" required><br><br>
     <label>Контакты</label><br>
-    <textarea name="contact">{{ form.contact.data or '' }}</textarea><br>
-    <button type="submit">Добавить</button>
+    <textarea name="contact" rows="4" placeholder="Телефон, email, адрес..."></textarea><br><br>
+    <button type="submit">Добавить поставщика</button>
+    <a href="{{ url_for('suppliers') }}">Отмена</a>
 </form>
 {% endblock %}

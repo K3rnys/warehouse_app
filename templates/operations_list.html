@@ -1,26 +1,29 @@
 {% extends 'base.html' %}
 {% block content %}
 <h2>Журнал операций</h2>
-<form method="get" action="{{ url_for('operations_list_view') }}">
-    От (YYYY-MM-DD): <input name="from" value="{{ df }}">
-    До (YYYY-MM-DD): <input name="to" value="{{ dt }}">
+<form method="get" action="{{ url_for('operations') }}">
+    От (YYYY-MM-DD): <input name="from" type="date" value="{{ request.args.get('from', '') }}">
+    До (YYYY-MM-DD): <input name="to" type="date" value="{{ request.args.get('to', '') }}">
     <button type="submit">Фильтр</button>
 </form>
-<a href="{{ url_for('add_operation_view') }}">Добавить операцию</a>
+<a href="{{ url_for('add_operation_view') }}">Добавить операцию</a><br><br>
 <table class="table">
-<thead><tr><th>id</th><th>Дата</th><th>Товар</th><th>Тип</th><th>Кол-во</th><th>Ответственный</th><th>Примечание</th></tr></thead>
+<thead><tr><th>ID</th><th>Дата</th><th>Товар</th><th>Тип</th><th>Кол-во</th><th>Ответственный</th><th>Примечание</th></tr></thead>
 <tbody>
 {% for o in operations %}
 <tr>
     <td>{{ o.id }}</td>
-    <td>{{ o.date.strftime('%Y-%m-%d') if o.date else '' }}</td>
-    <td>{{ o.product.name if o.product else '' }}</td>
+    <td>{{ o.date.strftime('%Y-%m-%d %H:%M') if o.date else '' }}</td>
+    <td>{{ o.product.name if o.product else 'N/A' }}</td>
     <td>{{ o.type }}</td>
     <td>{{ o.quantity }}</td>
-    <td>{{ o.responsible }}</td>
-    <td>{{ o.note }}</td>
+    <td>{{ o.responsible or '-' }}</td>
+    <td>{{ o.note or '-' }}</td>
 </tr>
 {% endfor %}
 </tbody>
 </table>
+{% if not operations %}
+<p>Нет операций. <a href="{{ url_for('add_operation_view') }}">Добавьте первую</a></p>
+{% endif %}
 {% endblock %}

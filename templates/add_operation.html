@@ -2,26 +2,33 @@
 {% block content %}
 <h2>Добавить операцию</h2>
 <form method="post">
-    <label>Товар</label><br>
-    <select name="product_id">
-        {% for val, label in form.product_id.choices %}
-            <option value="{{ val }}">{{ label }}</option>
+    <label>Товар*</label><br>
+    <select name="product_id" required>
+        <option value="">-- Выбрать товар --</option>
+        {% for p in products %}
+            <option value="{{ p.id }}">{{ p.name }} ({{ p.sku }})</option>
         {% endfor %}
-    </select><br>
-    <label>Тип операции</label><br>
-    <select name="op_type">
-        {% for val, label in form.op_type.choices %}
-            <option value="{{ val }}">{{ label }}</option>
-        {% endfor %}
-    </select><br>
-    <label>Количество</label><br>
-    <input name="quantity" type="number" value="{{ form.quantity.data or 1 }}"><br>
-    <label>Дата</label><br>
-    <input name="date" type="date" value="{{ form.date.data }}"><br>
-    <label>Откуда (склад)</label><br><input name="from_warehouse"><br>
-    <label>Куда (склад)</label><br><input name="to_warehouse"><br>
-    <label>Ответственный</label><br><input name="responsible"><br>
-    <label>Примечание</label><br><textarea name="note"></textarea><br>
-    <button type="submit">Добавить</button>
+    </select><br><br>
+    <label>Тип операции*</label><br>
+    <select name="type" required>
+        <option value="">-- Выбрать --</option>
+        <option value="in">Поступление (In)</option>
+        <option value="out">Отпуск (Out)</option>
+        <option value="adjust">Корректировка (Adjust)</option>
+    </select><br><br>
+    <label>Количество*</label><br>
+    <input name="quantity" type="number" min="1" value="1" required><br><br>
+    <label>Дата*</label><br>
+    <input name="date" type="date" required><br><br>
+    <label>Откуда (склад)</label><br>
+    <input name="from_wh"><br><br>
+    <label>Куда (склад)</label><br>
+    <input name="to_wh"><br><br>
+    <label>Ответственный</label><br>
+    <input name="responsible"><br><br>
+    <label>Примечание</label><br>
+    <textarea name="note" rows="4"></textarea><br><br>
+    <button type="submit">Добавить операцию</button>
+    <a href="{{ url_for('operations') }}">Отмена</a>
 </form>
 {% endblock %}
