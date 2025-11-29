@@ -2,6 +2,9 @@ from flask import Flask, render_template, request, redirect, url_for, flash
 from config import Config
 from models import db, Product, Supplier, Stock, Operation
 from datetime import datetime
+import redis
+
+redis_client = redis.Redis(host='redis', port=6379, db=0, decode_responses=True)
 
 app = Flask(__name__)
 app.config.from_object(Config)
@@ -14,9 +17,31 @@ with app.app_context():
 # ---------------- Главная ----------------
 @app.route("/")
 def index():
+    cache_key = "dashboard_stats"
+    cached = redis_client.get(cache_key)
+    
+    if cached:
+        # Если есть в кеше - возвращаем из Redis
+        import json
+        data = json.loads(cached)
+        return render_template("index.html",
+                               total_products=data['products'],
+                               total_suppliers=data['suppliers'],
+                               low_count=data['low_stock'])
+    
     total_products = Product.query.count()
     total_suppliers = Supplier.query.count()
     low = Stock.query.filter(Stock.quantity <= Stock.min_stock).count()
+    
+    # Сохраняем в кеш на 30 секунд
+    import json
+    data = {
+        'products': total_products,
+        'suppliers': total_suppliers, 
+        'low_stock': low
+    }
+    redis_client.setex(cache_key, 30, json.dumps(data))  
+    
     return render_template("index.html",
                            total_products=total_products,
                            total_suppliers=total_suppliers,
@@ -168,4 +193,4 @@ def stock_low():
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(host='0.0.0.0', port=5000, debug=True)
