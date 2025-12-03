@@ -9,17 +9,18 @@ redis_client = redis.Redis(host='redis', port=6379, db=0, decode_responses=True)
 app = Flask(__name__)
 app.config.from_object(Config)
 
-db.init_app(app)
-
-with app.app_context():
-    db.create_all()
+# Do not initialize the database at import time so tests can configure it.
+# The DB will be initialized when running the app directly or by tests via
+# `models.db.init_app(test_app)`.
 
 # ---------------- Главная ----------------
+
+
 @app.route("/")
 def index():
     cache_key = "dashboard_stats"
     cached = redis_client.get(cache_key)
-    
+
     if cached:
         # Если есть в кеше - возвращаем из Redis
         import json
@@ -28,7 +29,7 @@ def index():
                                total_products=data['products'],
                                total_suppliers=data['suppliers'],
                                low_count=data['low_stock'])
-    
+
     total_products = Product.query.count()
     total_suppliers = Supplier.query.count()
     low = Stock.query.filter(Stock.quantity <= Stock.min_stock).count()
