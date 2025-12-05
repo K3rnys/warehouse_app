@@ -2,7 +2,7 @@
 {% block content %}
 <h2>Товары ({{ products|length }})</h2>
 
-<form method="get" action="{{ url_for('products') }}">
+<form method="get" action="{{ url_for('main.products') }}">
     Поиск: <input name="q" value="{{ request.args.get('q','') }}">
     Категория: <input name="category" value="{{ request.args.get('category','') }}">
     Поставщик:

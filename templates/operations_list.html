@@ -1,12 +1,12 @@
 {% extends 'base.html' %}
 {% block content %}
 <h2>Журнал операций</h2>
-<form method="get" action="{{ url_for('operations') }}">
+<form method="get" action="{{ url_for('main.operations') }}">
     От (YYYY-MM-DD): <input name="from" type="date" value="{{ request.args.get('from', '') }}">
     До (YYYY-MM-DD): <input name="to" type="date" value="{{ request.args.get('to', '') }}">
     <button type="submit">Фильтр</button>
 </form>
-<a href="{{ url_for('add_operation_view') }}">Добавить операцию</a><br><br>
+<a href="{{ url_for('main.add_operation_view') }}">Добавить операцию</a><br><br>
 <table class="table">
 <thead><tr><th>ID</th><th>Дата</th><th>Товар</th><th>Тип</th><th>Кол-во</th><th>Ответственный</th><th>Примечание</th></tr></thead>
 <tbody>
@@ -24,6 +24,6 @@
 </tbody>
 </table>
 {% if not operations %}
-<p>Нет операций. <a href="{{ url_for('add_operation_view') }}">Добавьте первую</a></p>
+<p>Нет операций. <a href="{{ url_for('main.add_operation_view') }}">Добавьте первую</a></p>
 {% endif %}
 {% endblock %}

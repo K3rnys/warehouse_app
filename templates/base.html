@@ -9,14 +9,14 @@
 <header>
     <h1>Складец</h1>
     <nav>
-        <a href="{{ url_for('index') }}">Главная</a> |
-        <a href="{{ url_for('products') }}">Товары</a> |
-        <a href="{{ url_for('add_product') }}">Добавить товар</a> |
-        <a href="{{ url_for('suppliers') }}">Поставщики</a> |
-        <a href="{{ url_for('add_supplier') }}">Добавить поставщика</a> |
-        <a href="{{ url_for('operations') }}">Журнал операций</a> |
-        <a href="{{ url_for('add_operation_view') }}">Добавить операцию</a> |
-        <a href="{{ url_for('stock_low') }}">Малый остаток</a>
+        <a href="{{ url_for('main.index') }}">Главная</a> |
+        <a href="{{ url_for('main.products') }}">Товары</a> |
+        <a href="{{ url_for('main.add_product') }}">Добавить товар</a> |
+        <a href="{{ url_for('main.suppliers') }}">Поставщики</a> |
+        <a href="{{ url_for('main.add_supplier') }}">Добавить поставщика</a> |
+        <a href="{{ url_for('main.operations') }}">Журнал операций</a> |
+        <a href="{{ url_for('main.add_operation_view') }}">Добавить операцию</a> |
+        <a href="{{ url_for('main.stock_low') }}">Малый остаток</a>
     </nav>
     <hr>
 </header>

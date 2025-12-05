@@ -6,5 +6,6 @@ redis
 bandit
 pytest
 flake8
-mypy sqlalchemy-stubs
+mypy
 mypy-extensions
+uvicorn

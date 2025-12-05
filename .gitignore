@@ -1,1 +1,87 @@
-/venv
+# --- Python ---
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pdb
+*.pkl
+*.egg-info/
+*.egg
+*.log
+
+# Virtual environments
+venv/
+.env/
+.env.*
+
+
+# --- Flask / Instance / Local Data ---
+instance/
+*.sqlite
+*.sqlite3
+*.db
+*.db-journal
+warehouse.db
+
+
+# --- Redis dumps ---
+dump.rdb
+*.rdb
+
+
+# --- Alembic ---
+migrations/versions/*.pyc
+migrations/*.log
+alembic.ini.bak
+
+
+# --- Tests / Coverage ---
+htmlcov/
+.tox/
+.nox/
+.coverage
+coverage.xml
+pytest_cache/
+.pytest_cache/
+.cache/
+
+
+# --- VS Code ---
+.vscode/
+*.code-workspace
+
+
+# --- Docker ---
+docker-compose.override.yml
+*.pid
+*.tar
+*.img
+
+
+# --- OS / System Files ---
+.DS_Store
+Thumbs.db
+*.tmp
+
+
+# --- Environment Files ---
+*.env
+.env.local
+.env.dev
+.env.prod
+
+
+# --- MyPy / Type Checking ---
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+
+# --- IDE ---
+.idea/
+*.iml
+
+
+# --- Logs ---
+logs/
+*.log
