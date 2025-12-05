@@ -12,6 +12,15 @@ class Supplier(db.Model): # type: ignore
 
     products = db.relationship("Product", backref="supplier")
 
+class Supplier2(db.Model): # type: ignore
+    __tablename__ = "suppliers2"
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(200), nullable=False)
+    contact = db.Column(db.Text)
+
+
+
 
 class Product(db.Model): # type: ignore
     __tablename__ = "products"

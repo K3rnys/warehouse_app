@@ -3,9 +3,17 @@ from config import Config
 from models import db
 from routes import bp
 
-app = Flask(__name__)
-app.config.from_object(Config)
-app.register_blueprint(bp)
+def create_app():
+    app = Flask(__name__)
+    app.config.from_object(Config)
+
+    # Инициализируем базу данных
+    db.init_app(app)
+
+    # Регистрируем blueprint
+    app.register_blueprint(bp)
+
+    return app
 
 # Do not initialize the database at import time so tests can configure it.
 # The DB will be initialized when running the app directly or by tests via
@@ -13,8 +21,8 @@ app.register_blueprint(bp)
 
 
 if __name__ == "__main__":
+    app = create_app()
     # Initialize DB when running the app directly
-    db.init_app(app)
     with app.app_context():
         db.create_all()
 

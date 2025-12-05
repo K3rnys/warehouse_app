@@ -1,11 +1,12 @@
 import pytest
 
 
-from app import app as flask_app
+from app import create_app
 from models import db, Supplier, Product, Stock, Operation
 
 @pytest.fixture
 def app():
+    flask_app = create_app()
     #flask_app = create_app()
     flask_app.config.update({
         "TESTING": True,
