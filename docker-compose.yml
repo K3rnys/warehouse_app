@@ -3,22 +3,20 @@ version: '3.8'
 services:
   redis:
     image: redis:alpine
-    ports:
-      - "6379:6379"
     networks:
-      - warehouse-net
+      - warehouse-stage
 
   app:
     build: .
     ports:
-      - "5000:5000"
+      - "127.0.0.1:5001:5000"
     depends_on:
       - redis
     networks:
-      - warehouse-net
+      - warehouse-stage
     volumes:
       - ./data:/app/data  
 
 networks:
-  warehouse-net:
+  warehouse-stage:
     driver: bridge
