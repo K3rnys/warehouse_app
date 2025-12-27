@@ -1,6 +1,6 @@
 kind: pipeline
 type: docker
-name: deploy-stage
+name: deploy-prod
 
 trigger:
   branch:
@@ -9,17 +9,55 @@ trigger:
     - push
 
 steps:
-  - name: deploy-to-stage
-    image: docker:29.1.3-cli
+  - name: mypy-check
+    image: python:3.14-alpine
+    environment:
+      TOKEN:
+        from_secret: github_token
+    commands:
+      - apk add --no-cache git
+      - rm -rf repo
+      - git clone https://$TOKEN@github.com/K3rnys/warehouse_app.git repo
+      - cd repo
+      - git checkout main
+      - pip install -r requirements.txt
+      - mypy app.py
+
+  - name: backup-prod-db
+    image: alpine:3.20
+    volumes:
+      - name: prod_dir
+        path: /home/kernys/warehouse_app
+    commands:
+      - cd /home/kernys/warehouse_app
+      - mkdir -p backups
+      - TIMESTAMP=$(date +"%Y%m%d_%H%M%S")
+      - cp data/warehouse.db backups/warehouse_$TIMESTAMP.db
+      - echo "Prod DB backup created successfully"
+
+  - name: alembic-migration-prod
+    image: python:3.14-alpine
+    volumes:
+      - name: prod_dir
+        path: /home/kernys/warehouse_app
+    environment:
+      DATABASE_URL: "sqlite:///data/warehouse.db"
+    commands:
+      - cd /home/kernys/warehouse_app
+      - pip install -r requirements.txt
+      - alembic upgrade head
+
+  - name: deploy-to-prod
+    image: alpine:3.20
     volumes:
       - name: docker_sock
         path: /var/run/docker.sock
-      - name: stage_dir
-        path: /home/kernys/warehouse_app_stage
+      - name: prod_dir
+        path: /home/kernys/warehouse_app
     commands:
-      - apk add --no-cache git
-      - cd /home/kernys/warehouse_app_stage
-      - git pull origin dev
+      - apk add --no-cache git docker-cli docker-cli-compose
+      - cd /home/kernys/warehouse_app
+      - git pull origin main
       - docker compose down || true
       - docker compose up -d --build --force-recreate
 
@@ -27,6 +65,6 @@ volumes:
   - name: docker_sock
     host:
       path: /var/run/docker.sock
-  - name: stage_dir
+  - name: prod_dir
     host:
-      path: /home/kernys/warehouse_app_stage
+      path: /home/kernys/warehouse_app
