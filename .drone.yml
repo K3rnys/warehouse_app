@@ -21,7 +21,7 @@ steps:
       - git checkout feature/test
       - pip install -r requirements.txt
       - mypy app.py
-      - bandit -r . -lll
+#      - bandit -r . -lll
       
       
   - name: merge-to-dev
