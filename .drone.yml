@@ -1,0 +1,78 @@
+kind: pipeline
+type: docker
+name: deploy-prod
+
+trigger:
+  branch:
+    - main
+  event:
+    - push
+
+steps:
+  - name: mypy-check
+    image: python:3.14-alpine
+    environment:
+      TOKEN:
+        from_secret: github_token
+    commands:
+      - apk add --no-cache git
+      - rm -rf repo
+      - git clone https://$TOKEN@github.com/K3rnys/warehouse_app.git repo
+      - cd repo
+      - git checkout main
+      - pip install -r requirements.txt
+      - mypy app.py
+
+  - name: backup-prod-db
+    image: alpine:3.20
+    volumes:
+      - name: prod_dir
+        path: /home/kernys/warehouse_app
+    commands:
+      - cd /home/kernys/warehouse_app
+      - mkdir -p backups
+      - TIMESTAMP=$(date +"%Y%m%d_%H%M%S")
+      - cp data/warehouse.db backups/warehouse_$TIMESTAMP.db
+      - echo "Prod DB backup created successfully"
+
+  - name: alembic-migration-prod
+    image: python:3.14-alpine
+    volumes:
+      - name: prod_dir
+        path: /home/kernys/warehouse_app
+    environment:
+      DATABASE_URL: "sqlite:////home/kernys/warehouse_app/data/warehouse.db"
+    commands:
+      - apk add --no-cache bash
+      - cd /home/kernys/warehouse_app
+      - mkdir -p data
+      - chmod 777 data
+      - pip install --no-cache-dir -r requirements.txt
+      # Если база уже существует, помечаем миграцию как "head", чтобы не создавать таблицы повторно
+      - |
+        if [ -f data/warehouse.db ]; then
+          alembic stamp head
+        fi
+      - alembic upgrade head
+
+  - name: deploy-to-prod
+    image: alpine:3.20
+    volumes:
+      - name: docker_sock
+        path: /var/run/docker.sock
+      - name: prod_dir
+        path: /home/kernys/warehouse_app
+    commands:
+      - apk add --no-cache git docker-cli docker-cli-compose
+      - cd /home/kernys/warehouse_app
+      - git pull https://$TOKEN@github.com/K3rnys/warehouse_app.git main
+      - docker compose down || true
+      - docker compose up -d --build --force-recreate
+
+volumes:
+  - name: docker_sock
+    host:
+      path: /var/run/docker.sock
+  - name: prod_dir
+    host:
+      path: /home/kernys/warehouse_app
