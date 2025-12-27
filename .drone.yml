@@ -34,8 +34,6 @@ steps:
       - chmod 777 data 
       - mkdir -p backups
       - TIMESTAMP=$(date +"%Y%m%d_%H%M%S")
-      - cp data/warehouse.db backups/warehouse_$TIMESTAMP.db
-      - echo "Database backup created successfully
       - pip install -r requirements.txt
 
       # применяем все миграции
@@ -43,6 +41,8 @@ steps:
 
       # пробуем автогенерацию
       - alembic revision --autogenerate -m "ci check"
+      - cp data/warehouse.db backups/warehouse_$TIMESTAMP.db
+      - echo "Database backup created successfully
 
       # проверяем, что автогенерация не создаёт новых изменений
       #- alembic revision --autogenerate -m "ci check" --autogenerate-only-check
