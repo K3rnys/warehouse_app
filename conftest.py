@@ -6,13 +6,18 @@ from models import db, Supplier, Product, Stock, Operation
 
 @pytest.fixture
 def app():
-    flask_app = create_app()
-    #flask_app = create_app()
-    flask_app.config.update({
+    flask_app = create_app({
         "TESTING": True,
         "SQLALCHEMY_DATABASE_URI": "sqlite:///:memory:",
         "WTF_CSRF_ENABLED": False
     })
+
+    #flask_app = create_app()
+    #flask_app.config.update({
+    #    "TESTING": True,
+    #    "SQLALCHEMY_DATABASE_URI": "sqlite:///:memory:",
+    #    "WTF_CSRF_ENABLED": False
+    #})
 
     # Инициализируем расширение SQLAlchemy только если оно ещё не зарегистрировано
     # (иногда тестовый рантайм или импорт других модулей уже регистрировали его).
