@@ -1,9 +1,32 @@
 kind: pipeline
 type: docker
-name: default
+name: deploy-stage
+
+trigger:
+  branch:
+    - feature/test
+  event:
+    - push
 
 steps:
-  - name: test
-    image: alpine
+  - name: deploy-to-stage
+    image: docker:cli
+    volumes:
+      - name: docker_sock
+        path: /var/run/docker.sock
+      - name: stage_dir
+        path: /home/kernys/warehouse_app_stage
     commands:
-      - echo "VladikSS"
+      - apk add --no-cache git
+      - cd /home/kernys/warehouse_app_stage
+      - git pull origin dev
+      - docker compose down || true
+      - docker compose up -d --build --force-recreate
+
+volumes:
+  - name: docker_sock
+    host:
+      path: /var/run/docker.sock
+  - name: stage_dir
+    host:
+      path: /home/kernys/warehouse_app_stage
