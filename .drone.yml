@@ -20,9 +20,9 @@ steps:
       - cd repo
       - git checkout feature/test
       - pip install -r requirements.txt
-      - mypy app.py
-#      - bandit -r . -lll
-      - flake8 . || true
+      - mypy app.py #анализатор ORM 
+#      - bandit -r . -lll #статический анализатор уязвимостей 
+      - flake8 . || true #Статический анализатор качества кода
       
       
   - name: merge-to-dev
