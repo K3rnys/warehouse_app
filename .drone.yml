@@ -10,14 +10,14 @@ trigger:
 
 steps:
   - name: deploy-to-stage
-    image: docker:29.1.3-cli
+    image: alpine:3.20
     volumes:
       - name: docker_sock
         path: /var/run/docker.sock
       - name: stage_dir
         path: /home/kernys/warehouse_app_stage
     commands:
-      - apk add --no-cache git
+      - apk add --no-cache git docker-cli docker-cli-compose
       - cd /home/kernys/warehouse_app_stage
       - git pull origin dev
       - docker compose down || true
