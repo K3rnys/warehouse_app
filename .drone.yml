@@ -32,6 +32,10 @@ steps:
     commands:
       - mkdir -p data                 # создаём директорию
       - chmod 777 data 
+      - mkdir -p backups
+      - TIMESTAMP=$(date +"%Y%m%d_%H%M%S")
+      - cp data/warehouse.db backups/warehouse_$TIMESTAMP.db
+      - echo "Database backup created successfully
       - pip install -r requirements.txt
 
       # применяем все миграции
