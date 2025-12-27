@@ -8,13 +8,12 @@ trigger:
   event:
     - push
 
-environment:
-  TOKEN:
-    from_secret: github_token
-
 steps:
   - name: run-tests
     image: python:3.14-alpine
+    environment:
+      TOKEN:
+        from_secret: github_token
     commands:
       - apk add --no-cache git
       - git clone https://$TOKEN@github.com/K3rnys/warehouse_app.git repo
