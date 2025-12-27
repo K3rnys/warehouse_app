@@ -10,7 +10,7 @@ trigger:
 
 steps:
   - name: deploy-to-stage
-    image: docker:cli
+    image: docker:latest
     volumes:
       - name: docker_sock
         path: /var/run/docker.sock
