@@ -16,6 +16,7 @@ steps:
         from_secret: github_token
     commands:
       - apk add --no-cache git
+      - rm -rf repo
       - git clone https://$TOKEN@github.com/K3rnys/warehouse_app.git repo
       - cd repo
       - git checkout feature/test
@@ -25,11 +26,36 @@ steps:
       - flake8 . || true #Статический анализатор качества кода
       - pytest . # юнит тесты
       
-      
+  - name: alembic-migration-check
+    image: python:3.14-alpine
+    environment:
+      DATABASE_URL: "sqlite:///data/warehouse.db"
+    commands:
+      - mkdir -p data                 # создаём директорию
+      - chmod 777 data 
+      - mkdir -p backups
+      - TIMESTAMP=$(date +"%Y%m%d_%H%M%S")
+      - pip install -r requirements.txt
+
+      # применяем все миграции
+      - alembic upgrade head
+
+      # пробуем автогенерацию
+      - alembic revision --autogenerate -m "ci check"
+      - cp data/warehouse.db backups/warehouse_$TIMESTAMP.db
+      - echo "Database backup created successfully"
+
+      # проверяем, что автогенерация не создаёт новых изменений
+      #- alembic revision --autogenerate -m "ci check" --autogenerate-only-check
+        
   - name: merge-to-dev
     image: alpine:3.20
+    environment:
+      TOKEN:
+        from_secret: github_token
     commands:
       - apk add --no-cache git
+      - rm -rf repo
       - git clone https://$TOKEN@github.com/K3rnys/warehouse_app.git repo
       - cd repo
       - git checkout dev
