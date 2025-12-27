@@ -4,19 +4,19 @@ services:
   redis:
     image: redis:alpine
     networks:
-      - warehouse-stage
+      - warehouse-prod
 
   app:
     build: .
     ports:
-      - "127.0.0.1:5001:5000"
+      - "127.0.0.1:5000:5000"
     depends_on:
       - redis
     networks:
-      - warehouse-stage
+      - warehouse-prod
     volumes:
-      - ./data:/app/data  
+      - ./data:/app/data
 
 networks:
-  warehouse-stage:
+  warehouse-prod:
     driver: bridge

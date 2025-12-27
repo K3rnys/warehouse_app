@@ -1,15 +1,15 @@
 kind: pipeline
 type: docker
-name: deploy-stage
+name: deploy-prod
 
 trigger:
   branch:
-    - feature/test
+    - main
   event:
     - push
 
 steps:
-  - name: run-tests
+  - name: mypy-check
     image: python:3.14-alpine
     environment:
       TOKEN:
@@ -19,63 +19,53 @@ steps:
       - rm -rf repo
       - git clone https://$TOKEN@github.com/K3rnys/warehouse_app.git repo
       - cd repo
-      - git checkout feature/test
+      - git checkout main
       - pip install -r requirements.txt
-      - mypy app.py #анализатор ORM 
-#      - bandit -r . -lll #статический анализатор уязвимостей 
-      - flake8 . || true #Статический анализатор качества кода
-      - pytest . # юнит тесты
-      
-  - name: alembic-migration-check
-    image: python:3.14-alpine
-    environment:
-      DATABASE_URL: "sqlite:///data/warehouse.db"
+      - mypy app.py
+
+  - name: backup-prod-db
+    image: alpine:3.20
+    volumes:
+      - name: prod_dir
+        path: /home/kernys/warehouse_app
     commands:
-      - mkdir -p data                 # создаём директорию
-      - chmod 777 data 
+      - cd /home/kernys/warehouse_app
       - mkdir -p backups
       - TIMESTAMP=$(date +"%Y%m%d_%H%M%S")
-      - pip install -r requirements.txt
+      - cp data/warehouse.db backups/warehouse_$TIMESTAMP.db
+      - echo "Prod DB backup created successfully"
+
+  - name: alembic-migration-prod
+    image: python:3.14-alpine
+    volumes:
+      - name: prod_dir
+        path: /home/kernys/warehouse_app
+    environment:
+      DATABASE_URL: "sqlite:////home/kernys/warehouse_app/data/warehouse.db"
+    commands:
+      - apk add --no-cache bash
+      - cd /home/kernys/warehouse_app
+      - mkdir -p data
+      - chmod 777 data
+      - pip install --no-cache-dir -r requirements.txt
+      # Если база уже существует, помечаем миграцию как "head", чтобы не создавать таблицы повторно
       - |
         if [ -f data/warehouse.db ]; then
           alembic stamp head
         fi
-      # применяем все миграции
       - alembic upgrade head
 
-      # пробуем автогенерацию
-      - alembic revision --autogenerate -m "ci check"
-      - cp data/warehouse.db backups/warehouse_$TIMESTAMP.db
-      - echo "Database backup created successfully"
-
-      # проверяем, что автогенерация не создаёт новых изменений
-      #- alembic revision --autogenerate -m "ci check" --autogenerate-only-check
-        
-  - name: merge-to-dev
-    image: alpine:3.20
-    environment:
-      TOKEN:
-        from_secret: github_token
-    commands:
-      - apk add --no-cache git
-      - rm -rf repo
-      - git clone https://$TOKEN@github.com/K3rnys/warehouse_app.git repo
-      - cd repo
-      - git checkout dev
-      - git merge origin/feature/test --no-ff -m "Auto-merge feature/test into dev"
-      - git push https://$TOKEN@github.com/K3rnys/warehouse_app.git dev
-
-  - name: deploy-to-stage
+  - name: deploy-to-prod
     image: alpine:3.20
     volumes:
       - name: docker_sock
         path: /var/run/docker.sock
-      - name: stage_dir
-        path: /home/kernys/warehouse_app_stage
+      - name: prod_dir
+        path: /home/kernys/warehouse_app
     commands:
       - apk add --no-cache git docker-cli docker-cli-compose
-      - cd /home/kernys/warehouse_app_stage
-      - git pull origin dev
+      - cd /home/kernys/warehouse_app
+      - git pull https://$TOKEN@github.com/K3rnys/warehouse_app.git main
       - docker compose down || true
       - docker compose up -d --build --force-recreate
 
@@ -83,6 +73,6 @@ volumes:
   - name: docker_sock
     host:
       path: /var/run/docker.sock
-  - name: stage_dir
+  - name: prod_dir
     host:
-      path: /home/kernys/warehouse_app_stage
+      path: /home/kernys/warehouse_app
