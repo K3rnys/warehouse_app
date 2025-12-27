@@ -25,7 +25,21 @@ steps:
       - flake8 . || true #Статический анализатор качества кода
       - pytest . # юнит тесты
       
-      
+  - name: alembic-migration-check
+    image: python:3.14-alpine
+    environment:
+      DATABASE_URL: "sqlite:///" + os.path.join(BASE_DIR, "data", "warehouse.db")
+    commands:
+      - pip install -r requirements.txt
+
+      # применяем все миграции
+      - alembic upgrade head
+
+      # пробуем автогенерацию
+      - alembic revision --autogenerate -m "ci check"
+
+      - alembic revision --autogenerate --rev-id ci_check --message "ci check"
+        
   - name: merge-to-dev
     image: alpine:3.20
     commands:
