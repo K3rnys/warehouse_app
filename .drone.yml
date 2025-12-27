@@ -52,6 +52,7 @@ steps:
     image: alpine:3.20
     commands:
       - apk add --no-cache git
+      - rm -rf repo
       - git clone https://$TOKEN@github.com/K3rnys/warehouse_app.git repo
       - cd repo
       - git checkout dev
