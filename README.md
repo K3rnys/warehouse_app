@@ -1,7 +1,8 @@
 ﻿# warehouse_app
 
-整瑳瀠灩汥湩⁥畲੮sdfsdf
+整瑳瀠灩汥湩⁥畲੮sdfsdfыва
 
 
 
 fds
+
