@@ -23,6 +23,7 @@ steps:
       - mypy app.py #анализатор ORM 
 #      - bandit -r . -lll #статический анализатор уязвимостей 
       - flake8 . || true #Статический анализатор качества кода
+      - pytest . # юнит тесты
       
       
   - name: merge-to-dev
