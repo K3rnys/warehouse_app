@@ -40,7 +40,8 @@ steps:
       # пробуем автогенерацию
       - alembic revision --autogenerate -m "ci check"
 
-      - alembic revision --autogenerate --rev-id ci_check --message "ci check"
+      # проверяем, что автогенерация не создаёт новых изменений
+      - alembic revision --autogenerate -m "ci check" --autogenerate-only-check
         
   - name: merge-to-dev
     image: alpine:3.20
