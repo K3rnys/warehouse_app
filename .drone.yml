@@ -65,7 +65,7 @@ steps:
     commands:
       - apk add --no-cache git docker-cli docker-cli-compose
       - cd /home/kernys/warehouse_app
-      - git pull origin main
+      - git pull https://$TOKEN@github.com/K3rnys/warehouse_app.git main
       - docker compose down || true
       - docker compose up -d --build --force-recreate
 
