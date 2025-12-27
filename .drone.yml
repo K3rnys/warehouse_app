@@ -41,12 +41,18 @@ steps:
       - name: prod_dir
         path: /home/kernys/warehouse_app
     environment:
-      DATABASE_URL: "sqlite:///data/warehouse.db"
+      DATABASE_URL: "sqlite:////home/kernys/warehouse_app/data/warehouse.db"
     commands:
-      - mkdir -p data                 # создаём директорию
-      - chmod 777 data 
+      - apk add --no-cache bash
       - cd /home/kernys/warehouse_app
-      - pip install -r requirements.txt
+      - mkdir -p data
+      - chmod 777 data
+      - pip install --no-cache-dir -r requirements.txt
+      # Если база уже существует, помечаем миграцию как "head", чтобы не создавать таблицы повторно
+      - |
+        if [ -f data/warehouse.db ]; then
+          alembic stamp head
+        fi
       - alembic upgrade head
 
   - name: deploy-to-prod
