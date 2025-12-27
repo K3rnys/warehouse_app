@@ -9,7 +9,7 @@ __pycache__/
 *.egg
 *.log
 
-
+.drone.yml
 # Virtual environments
 venv/
 .env/
@@ -53,7 +53,7 @@ pytest_cache/
 
 
 # --- Docker ---
-docker-compose.override.yml
+docker-compose.yml
 *.pid
 *.tar
 *.img
