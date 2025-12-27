@@ -20,7 +20,11 @@ steps:
       - cd repo
       - git checkout feature/test
       - pip install -r requirements.txt
-      - pytest .
+      - mypy app.py #анализатор ORM 
+#      - bandit -r . -lll #статический анализатор уязвимостей 
+      - flake8 . || true #Статический анализатор качества кода
+      - pytest . # юнит тесты
+      
       
   - name: merge-to-dev
     image: alpine:3.20
