@@ -16,8 +16,8 @@ def app():
 
     # Инициализируем расширение SQLAlchemy только если оно ещё не зарегистрировано
     # (иногда тестовый рантайм или импорт других модулей уже регистрировали его).
-    if "sqlalchemy" not in getattr(flask_app, "extensions", {}):
-        db.init_app(flask_app)
+    #if "sqlalchemy" not in getattr(flask_app, "extensions", {}):
+    #    db.init_app(flask_app)
 
     with flask_app.app_context():
         db.create_all()
