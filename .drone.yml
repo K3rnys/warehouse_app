@@ -4,7 +4,7 @@ name: deploy-stage
 
 trigger:
   branch:
-    - feature/test
+    - main
   event:
     - push
 
