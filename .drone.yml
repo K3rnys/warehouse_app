@@ -28,7 +28,7 @@ steps:
   - name: alembic-migration-check
     image: python:3.14-alpine
     environment:
-      DATABASE_URL: "sqlite:///data/warehouse.db"
+      DATABASE_URL: "sqlite:////drone/src/data/warehouse.db"
     commands:
       - pip install -r requirements.txt
 
