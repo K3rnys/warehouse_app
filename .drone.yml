@@ -21,6 +21,8 @@ steps:
       - git checkout feature/test
       - pip install -r requirements.txt
       - mypy app.py
+      - bandit -r .
+      
       
   - name: merge-to-dev
     image: alpine:3.20
