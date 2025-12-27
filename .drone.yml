@@ -36,7 +36,10 @@ steps:
       - mkdir -p backups
       - TIMESTAMP=$(date +"%Y%m%d_%H%M%S")
       - pip install -r requirements.txt
-
+      - |
+        if [ -f data/warehouse.db ]; then
+          alembic stamp head
+        fi
       # применяем все миграции
       - alembic upgrade head
 
