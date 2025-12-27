@@ -43,6 +43,8 @@ steps:
     environment:
       DATABASE_URL: "sqlite:///data/warehouse.db"
     commands:
+      - mkdir -p data                 # создаём директорию
+      - chmod 777 data 
       - cd /home/kernys/warehouse_app
       - pip install -r requirements.txt
       - alembic upgrade head
