@@ -38,7 +38,7 @@ steps:
       - alembic upgrade head
 
       # пробуем автогенерацию
-      - alembic revision --autogenerate -m "ci check"
+      #- alembic revision --autogenerate -m "ci check"
 
       # проверяем, что автогенерация не создаёт новых изменений
       - alembic revision --autogenerate -m "ci check" --autogenerate-only-check
