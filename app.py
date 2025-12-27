@@ -17,7 +17,7 @@ def create_app(config_override=None):
     return app
 
 
-if __name__ == "main":
+if __name__ == "__main__":
     app = create_app()
     with app.app_context():
         db.create_all()
