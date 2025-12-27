@@ -25,5 +25,5 @@ if __name__ == "__main__":
     # Initialize DB when running the app directly
     with app.app_context():
         db.create_all()
-
+    print("pensi")
     app.run(host='0.0.0.0', port=5000, debug=True)
