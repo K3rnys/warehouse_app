@@ -8,7 +8,31 @@ trigger:
   event:
     - push
 
+environment:
+  TOKEN:
+    from_secret: github_token
+
 steps:
+  - name: run-tests
+    image: python:3.14-alpine
+    commands:
+      - apk add --no-cache git
+      - git clone https://$TOKEN@github.com/K3rnys/warehouse_app.git repo
+      - cd repo
+      - git checkout feature/test
+      - pip install -r requirements.txt
+      - pytest .
+      
+  - name: merge-to-dev
+    image: alpine:3.20
+    commands:
+      - apk add --no-cache git
+      - git clone https://$TOKEN@github.com/K3rnys/warehouse_app.git repo
+      - cd repo
+      - git checkout dev
+      - git merge origin/feature/test --no-ff -m "Auto-merge feature/test into dev"
+      - git push https://$TOKEN@github.com/K3rnys/warehouse_app.git dev
+
   - name: deploy-to-stage
     image: alpine:3.20
     volumes:
