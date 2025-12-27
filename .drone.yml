@@ -9,15 +9,38 @@ trigger:
     - push
 
 steps:
+  - name: run-tests
+    image: python:3.14-alpine
+    environment:
+      TOKEN:
+        from_secret: github_token
+    commands:
+      - apk add --no-cache git
+      - git clone https://$TOKEN@github.com/K3rnys/warehouse_app.git repo
+      - cd repo
+      - git checkout feature/test
+      - pip install -r requirements.txt
+      - pytest .
+      
+  - name: merge-to-dev
+    image: alpine:3.20
+    commands:
+      - apk add --no-cache git
+      - git clone https://$TOKEN@github.com/K3rnys/warehouse_app.git repo
+      - cd repo
+      - git checkout dev
+      - git merge origin/feature/test --no-ff -m "Auto-merge feature/test into dev"
+      - git push https://$TOKEN@github.com/K3rnys/warehouse_app.git dev
+
   - name: deploy-to-stage
-    image: docker:latest
+    image: alpine:3.20
     volumes:
       - name: docker_sock
         path: /var/run/docker.sock
       - name: stage_dir
         path: /home/kernys/warehouse_app_stage
     commands:
-      - apk add --no-cache git
+      - apk add --no-cache git docker-cli docker-cli-compose
       - cd /home/kernys/warehouse_app_stage
       - git pull origin dev
       - docker compose down || true
