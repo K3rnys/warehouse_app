@@ -9,6 +9,9 @@ trigger:
     - push
 
 steps:
+  # -------------------------------
+  # Step 1: Mypy check
+  # -------------------------------
   - name: mypy-check
     image: python:3.14-alpine
     environment:
@@ -20,9 +23,12 @@ steps:
       - git clone https://$TOKEN@github.com/K3rnys/warehouse_app.git repo
       - cd repo
       - git checkout main
-      - pip install -r requirements.txt
+      - pip install --no-cache-dir -r requirements.txt
       - mypy app.py
 
+  # -------------------------------
+  # Step 2: Backup production DB
+  # -------------------------------
   - name: backup-prod-db
     image: alpine:3.20
     volumes:
@@ -32,9 +38,17 @@ steps:
       - cd /home/kernys/warehouse_app
       - mkdir -p backups
       - TIMESTAMP=$(date +"%Y%m%d_%H%M%S")
-      - cp data/warehouse.db backups/warehouse_$TIMESTAMP.db
-      - echo "Prod DB backup created successfully"
+      - |
+        if [ -f data/warehouse.db ]; then
+          cp data/warehouse.db backups/warehouse_$TIMESTAMP.db
+          echo "Prod DB backup created successfully"
+        else
+          echo "No DB found to backup"
+        fi
 
+  # -------------------------------
+  # Step 3: Alembic migration
+  # -------------------------------
   - name: alembic-migration-prod
     image: python:3.14-alpine
     volumes:
@@ -55,6 +69,9 @@ steps:
         fi
       - alembic upgrade head
 
+  # -------------------------------
+  # Step 4: Deploy application
+  # -------------------------------
   - name: deploy-to-prod
     image: alpine:3.20
     volumes:
@@ -65,7 +82,7 @@ steps:
     commands:
       - apk add --no-cache git docker-cli docker-cli-compose
       - cd /home/kernys/warehouse_app
-      - git pull https://$TOKEN@github.com/K3rnys/warehouse_app.git main
+      - git pull origin main
       - docker compose down || true
       - docker compose up -d --build --force-recreate
 
@@ -76,3 +93,4 @@ volumes:
   - name: prod_dir
     host:
       path: /home/kernys/warehouse_app
+
