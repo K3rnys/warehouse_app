@@ -50,6 +50,9 @@ steps:
         
   - name: merge-to-dev
     image: alpine:3.20
+    environment:
+      TOKEN:
+        from_secret: github_token
     commands:
       - apk add --no-cache git
       - rm -rf repo
