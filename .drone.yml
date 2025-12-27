@@ -22,6 +22,7 @@ steps:
       - pip install -r requirements.txt
       - mypy app.py
 #      - bandit -r . -lll
+      flake8 . || true
       
       
   - name: merge-to-dev
